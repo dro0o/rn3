@@ -7,7 +7,8 @@ const blogReducer = (state, action) => {
         ...state,
         {
           id: Math.floor(Math.random() * 99999),
-          title: `Blog Post #${state.length + 1}`
+          title: action.payload.title,
+          content: action.payload.content
         }
       ]
     case 'edit_blogpost':
@@ -20,8 +21,10 @@ const blogReducer = (state, action) => {
 
 // TYPE and PAYLOAD are community convention, can rename
 const addBlogPost = dispatch => {
-  return () => {
-    dispatch({ type: 'add_blogpost' })
+  // could make aysnc, push to api somewhere, catch in case of error
+  return (title, content, callback) => {
+    dispatch({ type: 'add_blogpost', payload: { title, content } })
+    callback()
   }
 }
 const deleteBlogPost = dispatch => {
