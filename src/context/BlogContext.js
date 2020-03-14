@@ -1,19 +1,11 @@
 import createDataContext from './createDataContext'
 import jsonserver from '../api/jsonServer'
+import jsonServer from '../api/jsonServer'
 
 const blogReducer = (state, action) => {
   switch (action.type) {
     case 'get_blogpost':
       return action.payload
-    case 'add_blogpost':
-      return [
-        ...state,
-        {
-          id: Math.floor(Math.random() * 99999),
-          title: action.payload.title,
-          content: action.payload.content
-        }
-      ]
     case 'edit_blogpost':
       return state.map(blogPost => {
         return blogPost.id === action.payload.id ? action.payload : blogPost
@@ -34,21 +26,22 @@ const getBlogPost = dispatch => {
 
 // TYPE and PAYLOAD are community convention, can rename
 const addBlogPost = dispatch => {
-  // could make aysnc, push to api somewhere, catch in case of error
-  return (title, content, callback) => {
-    dispatch({ type: 'add_blogpost', payload: { title, content } })
+  return async (title, content, callback) => {
+    await jsonserver.post('/blogposts', { title, content })
     if (callback) {
       callback()
     }
   }
 }
 const deleteBlogPost = dispatch => {
-  return id => {
+  return async id => {
+    await jsonServer.delete(`/blogposts/${id}`)
     dispatch({ type: 'delete_blogpost', payload: id })
   }
 }
 const editBlogPost = dispatch => {
-  return (id, title, content, callback) => {
+  return async (id, title, content, callback) => {
+    await jsonserver.put(`/blogposts/${id}`, { title, content })
     dispatch({ type: 'edit_blogpost', payload: { id, title, content } })
     if (callback) {
       callback()
